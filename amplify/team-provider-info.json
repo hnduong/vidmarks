@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-vidmarks-dev-202955-authRole",
+      "UnauthRoleArn": "arn:aws:iam::227195807111:role/amplify-vidmarks-dev-202955-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::227195807111:role/amplify-vidmarks-dev-202955-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-vidmarks-dev-202955-deployment",
+      "UnauthRoleName": "amplify-vidmarks-dev-202955-unauthRole",
+      "StackName": "amplify-vidmarks-dev-202955",
+      "StackId": "arn:aws:cloudformation:us-west-2:227195807111:stack/amplify-vidmarks-dev-202955/b11f1e10-3c32-11eb-95f8-02c233fc463d",
+      "AmplifyAppId": "d3hk5tw3zs0k4t"
+    }
+  }
+}
