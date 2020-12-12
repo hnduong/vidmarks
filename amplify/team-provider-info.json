@@ -10,6 +10,11 @@
       "StackName": "amplify-vidmarks-dev-202955",
       "StackId": "arn:aws:cloudformation:us-west-2:227195807111:stack/amplify-vidmarks-dev-202955/b11f1e10-3c32-11eb-95f8-02c233fc463d",
       "AmplifyAppId": "d3hk5tw3zs0k4t"
+    },
+    "categories": {
+      "auth": {
+        "vidmarks5577d42a": {}
+      }
     }
   }
 }
