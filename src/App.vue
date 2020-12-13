@@ -1,72 +1,69 @@
 <template>
-  <amplify-authenticator>
-    <div id="app">
-      <h1>Todo App</h1>
-      <input type="text" v-model="name" placeholder="Name" />
-      <input type="number" v-model="offset" placeholder="Offset" />
-      <input type="text" v-model="url" placeholder="url" />
-
-      <button v-on:click="createBookmark">Create Bookmark</button>
-
-      <div v-for="item in bookmarks" :key="item.id">
-        <h3>{{ item.name }}</h3>
-        <p>{{ item.url }}</p>
-      </div>
-    </div>
-    <amplify-sign-out></amplify-sign-out>
-  </amplify-authenticator>
+  <div class="page-container">
+    <md-app>
+      <md-app-toolbar class="md-primary">
+        <md-button class="md-icon-button" @click="toggleNavigation">
+          <md-icon>menu</md-icon>
+        </md-button>
+        <span class="md-title">VidMarks</span>
+      </md-app-toolbar>
+      <md-app-drawer :md-active.sync="showNavigation">
+        <md-button class="md-icon-button" @click="toggleNavigation">
+          <md-icon>menu</md-icon>
+        </md-button>
+        <md-list>
+          <md-list-item v-if="authenticated">
+            <amplify-sign-out></amplify-sign-out>
+          </md-list-item>
+          <md-list-item v-else>
+            <router-link to="auth">Auth</router-link>
+          </md-list-item>
+        </md-list>
+      </md-app-drawer>
+      <md-app-content>
+        <router-view />
+      </md-app-content>
+    </md-app>
+  </div>
 </template>
 
 <script>
-import { API } from 'aws-amplify';
-import { createBookmark } from './graphql/mutations';
-import { listBookmarks } from './graphql/queries';
-import { onCreateBookmark } from './graphql/subscriptions';
+import { Auth } from 'aws-amplify';
+import * as UIMutations from '@/store/ui/mutations';
+import * as UIGetters from '@/store/ui/getters';
+import * as AuthMutations from '@/store/auth/mutations';
+import * as AuthGetters from '@/store/auth/getters';
+
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'app',
-  data() {
-    return {
-      bookmarks: [],
-      url: '',
-      name: '',
-      offset: 0,
-    };
-  },
   async created() {
-    this.getBookmarks();
-    this.subscribe();
+    const user = await Auth.currentCredentials();
+    this.setUser(user);
   },
   methods: {
-    async createBookmark() {
-      const { name, offset, url } = this;
-      if (!name) return;
-      const bookmark = { name, offset, url };
-      await API.graphql({
-        query: createBookmark,
-        variables: { input: bookmark },
-      });
-      this.name = '';
-      this.url = '';
-      this.offset = 0;
-    },
-    async getBookmarks() {
-      const bookmarks = await API.graphql({
-        query: listBookmarks,
-      });
-      console.log(bookmarks);
-      this.bookmarks = bookmarks.data.listBookmarks.items;
-    },
-    subscribe() {
-      API.graphql({ query: onCreateBookmark }).subscribe({
-        next: (eventData) => {
-          const bookmark = eventData.value.data.onCreateBookmark;
-          if (this.bookmarks.some((item) => item.name === bookmark.name))
-            return; // remove duplications
-          this.bookmarks = [...this.bookmarks, bookmark];
-        },
-      });
-    },
+    ...mapMutations({
+      setUser: AuthMutations.SET_USER,
+      toggleNavigation: UIMutations.TOGGLE_NAVIGATION
+    })
   },
+  computed: {
+    ...mapGetters({
+      authenticated: AuthGetters.GET_USER_AUTHENTICATED,
+      showNavigation: UIGetters.GET_SHOW_NAVIGATION
+    })
+  }
 };
 </script>
+
+<style lang="scss" scoped>
+.md-app {
+  min-height: 350px;
+  border: 1px solid rgba(#000, 0.12);
+}
+.md-drawer {
+  width: 230px;
+  max-width: calc(100vw - 125px);
+}
+</style>

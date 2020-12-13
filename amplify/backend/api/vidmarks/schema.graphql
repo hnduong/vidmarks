@@ -1,6 +1,46 @@
+#bookmark
 type Bookmark @model {
   id: ID!
   name: String!
-  offset: Int
+  offset: Int!
   url: String!
+  categories: [CategoryXBookmark]!
+    @connection(keyName: "byBookmark", fields: ["id"])
+}
+
+type CategoryXBookmark
+  @model(queries: null)
+  @key(name: "byCategory", fields: ["categoryId", "bookmarkId"])
+  @key(name: "byBookmark", fields: ["bookmarkId", "categoryId"]) {
+  id: ID!
+  bookmarkId: ID!
+  categoryId: ID!
+  bookmark: Bookmark! @connection(fields: ["bookmarkId"])
+  category: List! @connection(fields: ["categoryId"])
+}
+
+# Bookmark category
+type Category @model {
+  id: ID!
+  name: String!
+  bookmarks: [CategoryXBookmark]!
+    @connection(keyName: "byCategory", fields: ["id"])
+}
+
+type ListXBookmark
+  @model(queries: null)
+  @key(name: "byList", fields: ["listId", "bookmarkId"]) {
+  id: ID!
+  bookmarkId: ID!
+  listId: ID!
+  bookmark: Bookmark! @connection(fields: ["bookmarkId"])
+  list: List! @connection(fields: ["listId"])
+}
+
+# List
+type List @model {
+  id: ID!
+  name: String!
+  userId: String
+  bookmarks: [ListXBookmark] @connection(keyName: "byList", fields: ["id"])
 }
